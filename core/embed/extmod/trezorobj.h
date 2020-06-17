@@ -27,6 +27,12 @@
 #error Use MPZ for MicroPython long int implementation.
 #endif
 
+#ifdef TREZOR_EMULATOR
+#define STATICTYPE
+#else
+#define STATICTYPE static
+#endif
+
 // Casts int object into mp_int_t, without any conversions. Raises if object is
 // not int or if it does not fit into mp_int_t representation.
 static inline mp_int_t trezor_obj_get_int(mp_obj_t obj) {

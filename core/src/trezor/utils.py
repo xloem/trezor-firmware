@@ -62,6 +62,30 @@ def unimport_end(mods: Iterable[str]) -> None:
     gc.collect()
 
 
+if __debug__:
+
+    def mem_dump(filename: str) -> None:
+        print("### sysmodules:")
+        for mod in sys.modules:
+            print("*", mod)
+        print(
+            "### mem_alloc: {}, mem_free: {}, mem_frag: {}".format(
+                gc.mem_alloc(),
+                gc.mem_free(),
+                gc.mem_frag(),
+            )
+        )
+        if EMULATOR:
+            from trezorutils import meminfo
+
+            print("### dumping to", filename)
+            meminfo(filename)
+        else:
+            from micropython import mem_info
+
+            mem_info(True)
+
+
 def ensure(cond: bool, msg: str = None) -> None:
     if not cond:
         if msg is None:
