@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2.3.8 - [2021-02-15]
+
+### Added
+- Payment requests.  [#1429]
+- Go to bootloader from firmware. I know, it's for T1.  [#1461]
+
+### Changed
+- Cardano: format stake pool IDs as `bech32` instead of hex.  [#1458]
+
+### Fixed
+- CI bootloader build.  [#1470]
+
+
 ## 2.3.7 [unreleased]
 
 ### Added
