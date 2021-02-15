@@ -1,0 +1,1 @@
+Cardano: format stake pool IDs as `bech32` instead of hex.

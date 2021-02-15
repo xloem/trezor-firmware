@@ -69,6 +69,7 @@ hypothesis = "*"
 attrs = "*"
 inotify = "*"
 yamllint = "^1.25.0"
+towncrier = {git = "https://github.com/twisted/towncrier.git", rev = "7f209109"}
 
 [tool.poetry.dev-dependencies]
 scan-build = "*"
