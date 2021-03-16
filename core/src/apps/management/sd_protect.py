@@ -12,7 +12,7 @@ from apps.common.request_pin import (
     request_pin,
     request_pin_and_sd_salt,
 )
-from apps.common.sdcard import ensure_sdcard, sd_problem_dialog
+from apps.common.sdcard import confirm_retry_sd, ensure_sdcard
 
 if False:
     from typing import Awaitable, Tuple
@@ -34,8 +34,7 @@ async def _set_salt(
         try:
             return storage.sd_salt.set_sd_salt(salt, salt_tag, stage)
         except OSError:
-            if not await sd_problem_dialog(ctx):
-                raise wire.ProcessError("SD card I/O error.")
+            await confirm_retry_sd(ctx, exc=wire.ProcessError("SD card I/O error."))
 
 
 async def sd_protect(ctx: wire.Context, msg: SdProtect) -> Success:

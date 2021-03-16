@@ -15,10 +15,10 @@ def is_confirmed(x: Any) -> bool:
     return x is CONFIRMED
 
 
-async def raise_if_cancelled(a: Awaitable) -> None:
+async def raise_if_cancelled(a: Awaitable, exc: Any = wire.ActionCancelled) -> None:
     result = await a
     if result is CANCELLED:
-        raise wire.ActionCancelled
+        raise exc
 
 
 class ConfirmBase(ui.Layout):

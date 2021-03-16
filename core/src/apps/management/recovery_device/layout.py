@@ -5,7 +5,7 @@ from trezor.messages import ButtonRequestType
 from trezor.ui.components.tt.scroll import Paginated
 from trezor.ui.components.tt.text import Text
 from trezor.ui.components.tt.word_select import WordSelector
-from trezor.ui.layouts import confirm_action, not_cancelled, show_success, show_warning
+from trezor.ui.layouts import confirm_action, show_success, show_warning
 
 from apps.common import button_request
 from apps.common.confirm import confirm, info_confirm, require_confirm
@@ -21,30 +21,26 @@ if False:
     from trezor.messages.ResetDevice import EnumTypeBackupType
 
 
-async def confirm_abort(ctx: wire.GenericContext, dry_run: bool = False) -> bool:
+async def confirm_abort(ctx: wire.GenericContext, dry_run: bool = False) -> None:
     if dry_run:
-        return await not_cancelled(
-            confirm_action(
-                ctx,
-                "abort_recovery",
-                "Abort seed check",
-                description="Do you really want to abort the seed check?",
-                icon=ui.ICON_WIPE,
-                br_code=ButtonRequestType.ProtectCall,
-            )
+        await confirm_action(
+            ctx,
+            "abort_recovery",
+            "Abort seed check",
+            description="Do you really want to abort the seed check?",
+            icon=ui.ICON_WIPE,
+            br_code=ButtonRequestType.ProtectCall,
         )
     else:
-        return await not_cancelled(
-            confirm_action(
-                ctx,
-                "abort_recovery",
-                "Abort recovery",
-                description="Do you really want to abort the recovery process?",
-                action="All progress will be lost.",
-                reverse=True,
-                icon=ui.ICON_WIPE,
-                br_code=ButtonRequestType.ProtectCall,
-            )
+        await confirm_action(
+            ctx,
+            "abort_recovery",
+            "Abort recovery",
+            description="Do you really want to abort the recovery process?",
+            action="All progress will be lost.",
+            reverse=True,
+            icon=ui.ICON_WIPE,
+            br_code=ButtonRequestType.ProtectCall,
         )
 
 
@@ -278,5 +274,9 @@ async def homescreen_dialog(
             break
         # user has chosen to abort, confirm the choice
         dry_run = storage.recovery.is_dry_run()
-        if await confirm_abort(ctx, dry_run):
+        try:
+            await confirm_abort(ctx, dry_run)
+        except wire.ActionCancelled:
+            pass
+        else:
             raise RecoveryAborted

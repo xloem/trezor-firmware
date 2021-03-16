@@ -21,11 +21,3 @@ async def interact(
     workflow.close_others()
     await ctx.call(ButtonRequest(code=brcode), ButtonAck)
     return await ctx.wait(layout)
-
-
-async def not_cancelled(a: Awaitable[None]) -> bool:
-    try:
-        await a
-        return True
-    except wire.ActionCancelled:
-        return False

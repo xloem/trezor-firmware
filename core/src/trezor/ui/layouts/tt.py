@@ -21,10 +21,11 @@ from ..constants.tt import (
     QR_Y,
     TEXT_MAX_LINES,
 )
-from .common import interact, not_cancelled
+from .common import interact
 
 if False:
     from typing import (
+        Any,
         Iterator,
         List,
         Sequence,
@@ -46,7 +47,7 @@ __all__ = (
     "confirm_sign_identity",
     "confirm_signverify",
     "show_address",
-    "show_error",
+    "show_error_and_raise",
     "show_pubkey",
     "show_success",
     "show_xpub",
@@ -59,7 +60,6 @@ __all__ = (
     "confirm_replacement",
     "confirm_modify_fee",
     "confirm_coinjoin",
-    "not_cancelled",
 )
 
 
@@ -79,6 +79,7 @@ async def confirm_action(
     icon_color: int = None,  # TODO cleanup @ redesign
     reverse: bool = False,  # TODO cleanup @ redesign
     larger_vspace: bool = False,  # TODO cleanup @ redesign
+    exc: Any = wire.ActionCancelled,
     br_code: EnumTypeButtonRequestType = ButtonRequestType.Other,
 ) -> None:
     text = Text(
@@ -121,7 +122,8 @@ async def confirm_action(
             cls(text, confirm=verb, cancel=verb_cancel, **kwargs),
             br_type,
             br_code,
-        )
+        ),
+        exc,
     )
 
 
@@ -345,6 +347,7 @@ async def _show_modal(
     button_cancel: Optional[str],
     icon: str,
     icon_color: int,
+    exc: Any = wire.ActionCancelled,
 ) -> None:
     text = Text(header, icon, icon_color, new_lines=False)
     if subheader:
@@ -358,11 +361,12 @@ async def _show_modal(
             Confirm(text, confirm=button_confirm, cancel=button_cancel),
             br_type,
             br_code,
-        )
+        ),
+        exc,
     )
 
 
-async def show_error(
+async def show_error_and_raise(
     ctx: wire.GenericContext,
     br_type: str,
     content: str,
@@ -370,6 +374,7 @@ async def show_error(
     subheader: Optional[str] = None,
     button: str = "Close",
     red: bool = False,
+    exc: Any = wire.ActionCancelled,
 ) -> NoReturn:
     await _show_modal(
         ctx,
@@ -382,8 +387,9 @@ async def show_error(
         button_cancel=button,
         icon=ui.ICON_WRONG,
         icon_color=ui.RED if red else ui.ORANGE_ICON,
+        exc=exc,
     )
-    raise wire.ActionCancelled  # Appease mypy.
+    raise exc
 
 
 def show_warning(
