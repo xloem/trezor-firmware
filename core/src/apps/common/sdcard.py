@@ -102,7 +102,7 @@ async def confirm_retry_sd(
         ctx,
         "warning_sd_retry",
         "SD card problem",
-        action="None",
+        action=None,
         description="There was a problem accessing the SD card.",
         icon=ui.ICON_WRONG,
         icon_color=ui.RED,
