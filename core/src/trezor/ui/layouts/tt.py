@@ -332,7 +332,6 @@ def show_pubkey(
         data=pubkey,
         br_code=ButtonRequestType.PublicKey,
         icon=ui.ICON_RECEIVE,
-        truncate=True,
     )
 
 
@@ -460,28 +459,23 @@ async def confirm_hex(
     icon: str = ui.ICON_SEND,  # TODO cleanup @ redesign
     icon_color: int = ui.GREEN,  # TODO cleanup @ redesign
     width: int = MONO_HEX_PER_LINE,
-    truncate: bool = False,
     truncate_middle: bool = False,
 ) -> None:
     text = Text(title, icon, icon_color, new_lines=False)
-    if truncate:
-        description_lines = 0
-        if description is not None:
-            description_lines = Span(description, 0, ui.NORMAL).count_lines()
-            text.normal(description)
-            text.br()
-        text.mono(
-            *_truncate_hex(
-                data,
-                lines=TEXT_MAX_LINES - description_lines,
-                width=width,
-                middle=truncate_middle,
-            )
+    description_lines = 0
+    if description is not None:
+        description_lines = Span(description, 0, ui.NORMAL).count_lines()
+        text.normal(description)
+        text.br()
+    text.mono(
+        *_truncate_hex(
+            data,
+            lines=TEXT_MAX_LINES - description_lines,
+            width=width,
+            middle=truncate_middle,
         )
-        content: ui.Layout = Confirm(text)
-    else:
-        # TODO: auto-pagination
-        assert False
+    )
+    content: ui.Layout = Confirm(text)
     await raise_if_cancelled(interact(ctx, content, br_type, br_code))
 
 
