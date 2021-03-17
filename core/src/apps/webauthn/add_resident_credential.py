@@ -48,7 +48,6 @@ async def add_resident_credential(
             button="Close",
             content="The credential you are trying to import does\nnot belong to this authenticator.",
             red=True,
-            exc=wire.ActionCancelled,
         )
 
     content = ConfirmContent(ConfirmAddCredential(cred))

@@ -25,10 +25,10 @@ from .common import interact
 
 if False:
     from typing import (
-        Any,
         Iterator,
         List,
         Sequence,
+        Type,
         Union,
         Optional,
         Awaitable,
@@ -38,6 +38,8 @@ if False:
     from trezor.messages.ButtonRequest import EnumTypeButtonRequestType
 
     from ..components.common.text import TextContent
+
+    ExceptionType = Union[BaseException, Type[BaseException]]
 
 __all__ = (
     "confirm_action",
@@ -79,7 +81,7 @@ async def confirm_action(
     icon_color: Optional[int] = None,  # TODO cleanup @ redesign
     reverse: bool = False,  # TODO cleanup @ redesign
     larger_vspace: bool = False,  # TODO cleanup @ redesign
-    exc: Any = wire.ActionCancelled,
+    exc: ExceptionType = wire.ActionCancelled,
     br_code: EnumTypeButtonRequestType = ButtonRequestType.Other,
 ) -> None:
     text = Text(
@@ -346,7 +348,7 @@ async def _show_modal(
     button_cancel: Optional[str],
     icon: str,
     icon_color: int,
-    exc: Any = wire.ActionCancelled,
+    exc: ExceptionType = wire.ActionCancelled,
 ) -> None:
     text = Text(header, icon, icon_color, new_lines=False)
     if subheader:
@@ -373,7 +375,7 @@ async def show_error_and_raise(
     subheader: Optional[str] = None,
     button: str = "Close",
     red: bool = False,
-    exc: Any = wire.ActionCancelled,
+    exc: ExceptionType = wire.ActionCancelled,
 ) -> NoReturn:
     await _show_modal(
         ctx,

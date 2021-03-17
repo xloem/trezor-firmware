@@ -134,7 +134,7 @@ async def error_pin_invalid(ctx: wire.Context) -> NoReturn:
         red=True,
         exc=wire.PinInvalid,
     )
-    raise wire.PinInvalid
+    assert False
 
 
 async def error_pin_matches_wipe_code(ctx: wire.Context) -> NoReturn:
@@ -148,4 +148,4 @@ async def error_pin_matches_wipe_code(ctx: wire.Context) -> NoReturn:
         red=True,
         exc=wire.PinInvalid,
     )
-    raise wire.PinInvalid
+    assert False
