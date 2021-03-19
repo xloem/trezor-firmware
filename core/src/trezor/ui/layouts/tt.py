@@ -362,6 +362,7 @@ def show_pubkey(
         data=pubkey,
         br_code=ButtonRequestType.PublicKey,
         icon=ui.ICON_RECEIVE,
+        truncate=True,  # should fit?
     )
 
 
