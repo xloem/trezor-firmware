@@ -1,8 +1,8 @@
 from trezor import loop, utils, wire, workflow
-import usb
 
 # load applications
 import apps.base
+import usb
 
 apps.base.boot()
 
@@ -15,11 +15,6 @@ if __debug__:
     import apps.debug
 
     apps.debug.boot()
-
-with utils.unimport():
-    import register_messages
-
-    del register_messages
 
 # run main event loop and specify which screen is the default
 apps.base.set_homescreen()
