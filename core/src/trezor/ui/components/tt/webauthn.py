@@ -1,35 +1,7 @@
 from trezor import ui
-from trezor.ui.components.tt.text import text_center_trim_left, text_center_trim_right
 
-if False:
-    from typing import Optional
-
-
-DEFAULT_ICON = "apps/webauthn/res/icon_webauthn.toif"
-
-
-class ConfirmInfo:
-    def __init__(self) -> None:
-        self.app_icon: Optional[bytes] = None
-
-    def get_header(self) -> str:
-        raise NotImplementedError
-
-    def app_name(self) -> str:
-        raise NotImplementedError
-
-    def account_name(self) -> Optional[str]:
-        return None
-
-    def load_icon(self, rp_id_hash: bytes) -> None:
-        from trezor import res
-        from . import knownapps
-
-        fido_app = knownapps.by_rp_id_hash(rp_id_hash)
-        if fido_app is not None and fido_app.icon is not None:
-            self.app_icon = res.load(fido_app.icon)
-        else:
-            self.app_icon = res.load(DEFAULT_ICON)
+from ..common.webauthn import ConfirmInfo
+from .text import text_center_trim_left, text_center_trim_right
 
 
 class ConfirmContent(ui.Component):
