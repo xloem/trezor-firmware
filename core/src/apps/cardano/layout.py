@@ -191,7 +191,6 @@ async def show_warning_tx_pointer_address(
         title="Confirm transaction",
         props=[
             ("Change address has a\npointer with staking\nrights.\n\n\n", None),
-            # WTF
             (
                 "Pointer:",
                 "%s, %s, %s"
