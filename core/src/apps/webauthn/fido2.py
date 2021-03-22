@@ -1488,7 +1488,7 @@ def cbor_make_credential_process(
         return cbor_error(req.cid, _ERR_OTHER)
 
     try:
-        param = cbor.decode(req.data[1:])
+        param = cbor.decode(req.data, offset=1)
         rp = param[_MAKECRED_CMD_RP]
         rp_id = rp["id"]
         rp_id_hash = hashlib.sha256(rp_id).digest()
@@ -1668,7 +1668,7 @@ def cbor_get_assertion_process(
         return cbor_error(req.cid, _ERR_OTHER)
 
     try:
-        param = cbor.decode(req.data[1:])
+        param = cbor.decode(req.data, offset=1)
         rp_id = param[_GETASSERT_CMD_RP_ID]
         rp_id_hash = hashlib.sha256(rp_id).digest()
 
@@ -1892,7 +1892,7 @@ def cbor_get_info(req: Cmd) -> Cmd:
 
 def cbor_client_pin(req: Cmd) -> Cmd:
     try:
-        param = cbor.decode(req.data[1:])
+        param = cbor.decode(req.data, offset=1)
         pin_protocol = param[_CLIENTPIN_CMD_PIN_PROTOCOL]
         subcommand = param[_CLIENTPIN_CMD_SUBCOMMAND]
     except Exception:

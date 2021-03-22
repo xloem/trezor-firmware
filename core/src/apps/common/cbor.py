@@ -230,8 +230,9 @@ def encode(value: Value) -> bytes:
     return b"".join(_cbor_encode(value))
 
 
-def decode(cbor: bytes) -> Value:
+def decode(cbor: bytes, offset: int = 0) -> Value:
     r = utils.BufferReader(cbor)
+    r.seek(offset)
     res = _cbor_decode(r)
     if r.remaining_count():
         raise ValueError
