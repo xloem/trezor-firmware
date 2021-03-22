@@ -309,7 +309,7 @@ class UnexpectedMessageError(Exception):
 
 
 async def handle_session(
-    iface: WireInterface, session_id: int, is_debug_session: bool = True
+    iface: WireInterface, session_id: int, is_debug_session: bool = False
 ) -> None:
     if __debug__ and is_debug_session:
         ctx_buffer = WIRE_BUFFER_DEBUG
@@ -320,6 +320,8 @@ async def handle_session(
     res_msg: Optional[protobuf.MessageType] = None
     req_type = None
     req_msg = None
+
+    modules = utils.unimport_begin()
     while True:
         try:
             if next_msg is None:
@@ -355,7 +357,8 @@ async def handle_session(
 
             # Take a mark of modules that are imported at this point, so we can
             # roll back and un-import any others.  Should not raise.
-            modules = utils.unimport_begin()
+            if is_debug_session:
+                modules = utils.unimport_begin()
 
             # We need to find a handler for this message type.  Should not
             # raise.
@@ -454,6 +457,10 @@ async def handle_session(
 
             # Unload modules imported by the workflow.  Should not raise.
             utils.unimport_end(modules)
+
+            if not is_debug_session and next_msg is None:  # and msg_type != 0:
+                loop.clear()
+                return
 
         except Exception as exc:
             # The session handling should never exit, just log and continue.
