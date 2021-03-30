@@ -319,9 +319,19 @@ def set_safety_check_level(level: StorageSafetyCheckLevel) -> None:
     common.set_uint8(_NAMESPACE, _SAFETY_CHECK_LEVEL, level)
 
 
+_experimental_features_cached: Optional[bool] = None
+
+
 def get_experimental_features() -> bool:
-    return common.get_bool(_NAMESPACE, _EXPERIMENTAL_FEATURES)
+    global _experimental_features_cached
+    if _experimental_features_cached is None:
+        _experimental_features_cached = common.get_bool(
+            _NAMESPACE, _EXPERIMENTAL_FEATURES
+        )
+    return _experimental_features_cached
 
 
 def set_experimental_features(enabled: bool) -> None:
+    global _experimental_features_cached
+    _experimental_features_cached = enabled
     common.set_true_or_delete(_NAMESPACE, _EXPERIMENTAL_FEATURES, enabled)
