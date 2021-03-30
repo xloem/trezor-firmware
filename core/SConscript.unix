@@ -558,7 +558,6 @@ if EVERYTHING and FEATURE_FLAGS["SECP256K1_ZKP"]:
 # Rust library
 #
 
-RUST_TOOLCHAIN = 'nightly'
 RUST_PROFILE = 'release'
 RUST_LIB = 'trezor_lib'
 RUST_LIBDIR = f'embed/rust/target/{RUST_PROFILE}'
@@ -571,7 +570,7 @@ def cargo_build():
         profile = '--release'
     else:
         profile = ''
-    return f'cd embed/rust; cargo +{RUST_TOOLCHAIN} build {profile}'
+    return f'cd embed/rust; cargo build {profile}'
 
 rust = env.Command(
     target=RUST_LIBPATH,
@@ -580,8 +579,8 @@ rust = env.Command(
 
 env.Depends(rust, qstr_generated)
 
-env.Append(LINKFLAGS=f' -L{RUST_LIBDIR}')
-env.Append(LINKFLAGS=f' -l{RUST_LIB}')
+env.Append(LINKFLAGS=f'-L{RUST_LIBDIR}')
+env.Append(LINKFLAGS=f'-l{RUST_LIB}')
 
 #
 # Program objects

@@ -1,25 +1,34 @@
 { fullDeps ? false }:
 
-# the last successful build of nixpkgs-unstable as of 2020-12-30
-with import
-  (builtins.fetchTarball {
+let
+  mozillaOverlay = import (builtins.fetchTarball {
+    url = "https://github.com/mozilla/nixpkgs-mozilla/archive/8c007b60731c07dd7a052cce508de3bb1ae849b4.tar.gz";
+    sha256 = "1zybp62zz0h077zm2zmqs2wcg3whg6jqaah9hcl1gv4x8af4zhs6";
+  });
+  # the last successful build of nixpkgs-unstable as of 2020-12-30
+  nixpkgs = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/bea44d5ebe332260aa34a1bd48250b6364527356.tar.gz";
     sha256 = "14sfk04iyvyh3jl1s2wayw1y077dwpk2d712nhjk1wwfjkdq03r3";
-  })
-{ };
-
-let
-  moneroTests = fetchurl {
+  }) { overlays = [ mozillaOverlay ]; };
+  moneroTests = nixpkgs.fetchurl {
     url = "https://github.com/ph4r05/monero/releases/download/v0.17.1.9-tests/trezor_tests";
     sha256 = "410bc4ff2ff1edc65e17f15b549bd1bf8a3776cf67abdea86aed52cf4bce8d9d";
   };
-  moneroTestsPatched = runCommandCC "monero_trezor_tests" {} ''
+  moneroTestsPatched = nixpkgs.runCommandCC "monero_trezor_tests" {} ''
     cp ${moneroTests} $out
     chmod +wx $out
-    ${patchelf}/bin/patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$out"
+    ${nixpkgs.patchelf}/bin/patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$out"
     chmod -w $out
   '';
+  rustNightly = (nixpkgs.rustChannelOf { date = "2021-03-29"; channel = "nightly"; }).rust.override {
+    targets = [
+      "x86_64-unknown-linux-gnu" # emulator
+      "thumbv7em-none-eabihf"    # TT
+      "thumbv7em-none-eabi"      # T1
+    ];
+  };
 in
+with nixpkgs;
 stdenv.mkDerivation ({
   name = "trezor-firmware-env";
   buildInputs = lib.optionals fullDeps [
@@ -37,6 +46,7 @@ stdenv.mkDerivation ({
     bash
     check
     clang-tools
+    clang
     editorconfig-checker
     gcc
     gcc-arm-embedded
@@ -51,6 +61,8 @@ stdenv.mkDerivation ({
     pkgconfig
     poetry
     protobuf3_6
+    rustfmt
+    rustNightly
     wget
     zlib
   ] ++ lib.optionals (!stdenv.isDarwin) [
@@ -75,6 +87,8 @@ stdenv.mkDerivation ({
   # Fix bdist-wheel problem by setting source date epoch to a more recent date
   SOURCE_DATE_EPOCH = 1600000000;
 
+  # Used by rust bindgen
+  LIBCLANG_PATH = "${llvmPackages.libclang}/lib";
 } // (lib.optionalAttrs fullDeps) {
   TREZOR_MONERO_TESTS_PATH = moneroTestsPatched;
 })
